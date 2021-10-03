@@ -70,7 +70,7 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
         .filter(|&(_, v)| v == true)
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
-    let chosen = moves.choose(&mut rand::thread_rng()).unwrap();
+    let chosen = moves.choose(&mut rand::thread_rng()).unwrap(); // TODO: add contingency stratergy stuff
 
     info!("{} MOVE {}", game.id, chosen);
 
