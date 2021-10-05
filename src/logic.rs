@@ -28,14 +28,9 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 }
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
-    let mut possible_moves: HashMap<_, _> = vec![
-        ("up", true),
-        ("down", true),
-        ("left", true),
-        ("right", true),
-    ]
-    .into_iter()
-    .collect();
+    let mut possible_moves: HashMap<&'static str, bool> = vec![]
+        .into_iter()
+        .collect();
 
     // Step 0: Don't let your Battlesnake move back in on its own neck
     let my_head = &me.head;
@@ -70,11 +65,13 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
         .filter(|&(_, v)| v == true)
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
-    let chosen = moves.choose(&mut rand::thread_rng()).unwrap(); // TODO: add contingency stratergy stuff
 
-    info!("{} MOVE {}", game.id, chosen);
-
-    return chosen;
+    if let Some(chosen) = moves.choose(&mut rand::thread_rng()) { // "Perfect" move has been found
+        info!("{} MOVE {}", game.id, chosen);
+        chosen
+    } else { // Find maybe valid move via huristics
+        "left"
+    }
 }
 
 fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
