@@ -10,13 +10,13 @@ pub fn get_info() -> JsonValue {
     info!("INFO");
 
     // Personalize the look of your snake per https://docs.battlesnake.com/references/personalization
-    return json!({
+    json!({
         "apiversion": "1",
         "author": "ChaelCodes",
         "color": "#F09383",
         "head": "bendr",
         "tail": "round-bum",
-    });
+    })
 }
 
 pub fn start(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
@@ -81,10 +81,10 @@ fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
         snake_parts.append(&mut snake.body.clone());
     }
     if snake_parts.contains(&spot) {
-        return true;
+        true
+    } else {
+        false
     }
-
-    false
 }
 
 #[cfg(test)]

@@ -96,7 +96,7 @@ fn handle_move(move_req: Json<GameState>) -> JsonValue {
         &move_req.you,
     );
 
-    return json!({ "move": chosen });
+    json!({ "move": chosen })
 }
 
 #[post("/end", format = "json", data = "<end_req>")]
