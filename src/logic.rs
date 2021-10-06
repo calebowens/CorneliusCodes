@@ -8,20 +8,20 @@ use log::info;
 use crate::{Battlesnake, Board, Coord, Game};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
-enum Move {
+enum Direction {
     Up,
     Down,
     Left,
     Right
 }
 
-impl Move {
+impl Direction {
     fn to_str(self: Self) -> &'static str {
         match self {
-            Move::Up => "up",
-            Move::Down => "down",
-            Move::Left => "left",
-            Move::Right => "right"
+            Direction::Up => "up",
+            Direction::Down => "down",
+            Direction::Left => "left",
+            Direction::Right => "right"
         }
     }
 }
@@ -55,7 +55,7 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
         } else if let Some(chosen) = find_heuristic_move(&me, &board) { // Find maybe valid move via huristics
             chosen
         } else { // Crash and burn in the most beautiful way possible, IE avoid other snakes
-            Move::Left
+            Direction::Left
         }.to_str()
     };
     
@@ -65,17 +65,17 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
 }
 
 // TODO: Write tests
-fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Move> {
+fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
     let mut possible_moves = HashMap::new();
 
     let head = me.head;
     // Step 0: Don't let your Battlesnake move back in on its own neck
     // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
 
-    possible_moves.insert(Move::Left, valid_move(&head.left(), &board, &me));
-    possible_moves.insert(Move::Right, valid_move(&head.right(), &board, &me));
-    possible_moves.insert(Move::Up, valid_move(&head.up(), &board, &me));
-    possible_moves.insert(Move::Down, valid_move(&head.down(), &board, &me));
+    possible_moves.insert(Direction::Left, valid_move(&head.left(), &board, &me));
+    possible_moves.insert(Direction::Right, valid_move(&head.right(), &board, &me));
+    possible_moves.insert(Direction::Up, valid_move(&head.up(), &board, &me));
+    possible_moves.insert(Direction::Down, valid_move(&head.down(), &board, &me));
 
     // TODO: Step 4 - Find food.
     // Use board information to seek out and find food.
@@ -89,11 +89,11 @@ fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Move> {
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
 
-    moves.choose(&mut rand::thread_rng()).map(|direction: &Move| direction.clone()) // Chose method from SliceRandom
+    moves.choose(&mut rand::thread_rng()).map(|direction: &Direction| direction.clone()) // Chose method from SliceRandom
 }
 
-fn find_heuristic_move(me: &Battlesnake, board: &Board) -> Option<Move> {
-    Some(Move::Left)
+fn find_heuristic_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
+    Some(Direction::Left)
 }
 
 fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
