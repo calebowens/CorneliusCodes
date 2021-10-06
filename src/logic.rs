@@ -50,16 +50,13 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
     
     let direction =
-        if let Some(chosen) = find_perfect_move(&me, &board) {
             // Corny is being a clever boy and found a perfect move!
-            chosen
-        } else if let Some(chosen) = find_heuristic_move(&me, &board) {
+        find_perfect_move(&me, &board)
             // Corny will try a more desperate stratergy that may or may not succeed
-            chosen
-        } else {
+        .or_else(|| find_heuristic_move(&me, &board))
             // When all else fails, corny likes left. What can I say?
-            Direction::Left
-        }.to_str();
+        .unwrap_or_else(|| Direction::Left)
+        .to_str();
     
     info!("{} MOVE {}", game.id, direction);
 
