@@ -50,11 +50,14 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
     
     let direction = {
-        if let Some(chosen) = find_perfect_move(&me, &board) { // "Perfect" move has been found
+        if let Some(chosen) = find_perfect_move(&me, &board) {
+            // Corny is being a clever boy and found a perfect move!
             chosen
-        } else if let Some(chosen) = find_heuristic_move(&me, &board) { // Find maybe valid move via huristics
+        } else if let Some(chosen) = find_heuristic_move(&me, &board) {
+            // Corny will try a more desperate stratergy that may or may not succeed
             chosen
-        } else { // Crash and burn in the most beautiful way possible, IE avoid other snakes
+        } else {
+            // When all else fails, corny likes left. What can I say?
             Direction::Left
         }.to_str()
     };
@@ -69,20 +72,17 @@ fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
     let mut possible_moves = HashMap::new();
 
     let head = me.head;
-    // Step 0: Don't let your Battlesnake move back in on its own neck
-    // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
 
+    // Form a list valid moves for corny to pick from
     possible_moves.insert(Direction::Left, valid_move(&head.left(), &board, &me));
     possible_moves.insert(Direction::Right, valid_move(&head.right(), &board, &me));
     possible_moves.insert(Direction::Up, valid_move(&head.up(), &board, &me));
     possible_moves.insert(Direction::Down, valid_move(&head.down(), &board, &me));
 
-    // TODO: Step 4 - Find food.
-    // Use board information to seek out and find food.
-    // food = move_req.board.food
+    // TODO: Tell corny how to find food.
 
-    // Finally, choose a move from the available safe moves.
-    // TODO: Step 5 - Select a move to make based on strategy, rather than random.
+    // Corny picks a direction
+    // TODO: Encourage corny to use an advanced stratergy rather than their d4.
     let moves = possible_moves
         .into_iter()
         .filter(|&(_, v)| v == true)
