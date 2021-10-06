@@ -12,7 +12,7 @@ enum Direction {
     Up,
     Down,
     Left,
-    Right
+    Right,
 }
 
 impl Direction {
@@ -21,7 +21,7 @@ impl Direction {
             Direction::Up => "up",
             Direction::Down => "down",
             Direction::Left => "left",
-            Direction::Right => "right"
+            Direction::Right => "right",
         }
     }
 }
@@ -48,7 +48,6 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 }
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
-    
     let direction =
             // Corny is being a clever snake and found a perfect move!
         find_perfect_move(&me, &board)
@@ -57,7 +56,7 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
             // When all else fails, corny likes left. What can I say?
         .unwrap_or_else(|| Direction::Left)
         .to_str();
-    
+
     info!("{} MOVE {}", game.id, direction);
 
     direction
@@ -85,7 +84,9 @@ fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
 
-    moves.choose(&mut rand::thread_rng()).map(|direction: &Direction| direction.clone()) // Chose method from SliceRandom
+    moves
+        .choose(&mut rand::thread_rng())
+        .map(|direction: &Direction| direction.clone()) // Chose method from SliceRandom
 }
 
 fn find_heuristic_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
