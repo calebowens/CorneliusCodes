@@ -1,10 +1,30 @@
 use rand::seq::SliceRandom;
 use rocket_contrib::json::JsonValue;
 use std::collections::HashMap;
+use std::option::Option;
 
 use log::info;
 
 use crate::{Battlesnake, Board, Coord, Game};
+
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+enum Move {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
+impl Move {
+    fn to_str(self: Self) -> &'static str {
+        match self {
+            Move::Up => "up",
+            Move::Down => "down",
+            Move::Left => "left",
+            Move::Right => "right"
+        }
+    }
+}
 
 pub fn get_info() -> JsonValue {
     info!("INFO");
@@ -28,21 +48,37 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 }
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
+    
+    let direction = {
+        if let Some(chosen) = find_perfect_move(&me.head, &board) { // "Perfect" move has been found
+            chosen
+        } else if let Some(chosen) = find_heuristic_move(&me, &board) { // Find maybe valid move via huristics
+            chosen
+        } else { // Crash and burn in the most beautiful way possible, IE avoid other snakes
+            Move::Left
+        }.to_str()
+    };
+    
+    info!("{} MOVE {}", game.id, direction);
+
+    direction
+}
+
+// TODO: Write tests
+fn find_perfect_move(head: &Coord, board: &Board) -> Option<Move> {
     let mut possible_moves = HashMap::new();
 
     // Step 0: Don't let your Battlesnake move back in on its own neck
-    let head = &me.head;
-
     // Use board information to prevent your Battlesnake from moving beyond the boundaries of the board.
     let left = Coord { x: head.x - 1, y: head.y };
     let right = Coord { x: head.x + 1, y: head.y };
     let up = Coord { x: head.x, y: head.y + 1 };
     let down = Coord { x: head.x, y: head.y - 1 };
 
-    possible_moves.insert("left", valid_move(&left, &board));
-    possible_moves.insert("right", valid_move(&right, &board));
-    possible_moves.insert("up", valid_move(&up, &board));
-    possible_moves.insert("down", valid_move(&down, &board));
+    possible_moves.insert(Move::Left, valid_move(&left, &board));
+    possible_moves.insert(Move::Right, valid_move(&right, &board));
+    possible_moves.insert(Move::Up, valid_move(&up, &board));
+    possible_moves.insert(Move::Down, valid_move(&down, &board));
 
     // TODO: Step 2 - Don't hit yourself.
     // Use body information to prevent your Battlesnake from colliding with itself.
@@ -64,12 +100,11 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
 
-    if let Some(chosen) = moves.choose(&mut rand::thread_rng()) { // "Perfect" move has been found
-        info!("{} MOVE {}", game.id, chosen);
-        chosen
-    } else { // Find maybe valid move via huristics
-        "left"
-    }
+    moves.choose(&mut rand::thread_rng()).map(|direction: &Move| direction.clone()) // Chose method from SliceRandom
+}
+
+fn find_heuristic_move(me: &Battlesnake, board: &Board) -> Option<Move> {
+    Some(Move::Left)
 }
 
 fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
@@ -78,11 +113,7 @@ fn spot_has_snake(spot: &Coord, snakes: &Vec<Battlesnake>) -> bool {
         snake_parts.push(snake.head);
         snake_parts.append(&mut snake.body.clone());
     }
-    if snake_parts.contains(&spot) {
-        true
-    } else {
-        false
-    }
+    snake_parts.contains(&spot)
 }
 
 #[cfg(test)]
