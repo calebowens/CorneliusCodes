@@ -50,7 +50,7 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
     
     let direction =
-            // Corny is being a clever boy and found a perfect move!
+            // Corny is being a clever snake and found a perfect move!
         find_perfect_move(&me, &board)
             // Corny will try a more desperate stratergy that may or may not succeed
         .or_else(|| find_heuristic_move(&me, &board))
