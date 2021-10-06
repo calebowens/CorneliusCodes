@@ -49,7 +49,7 @@ pub fn end(game: &Game, _turn: &u32, _board: &Board, _me: &Battlesnake) {
 
 pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'static str {
     
-    let direction = {
+    let direction =
         if let Some(chosen) = find_perfect_move(&me, &board) {
             // Corny is being a clever boy and found a perfect move!
             chosen
@@ -59,8 +59,7 @@ pub fn get_move(game: &Game, _turn: &u32, board: &Board, me: &Battlesnake) -> &'
         } else {
             // When all else fails, corny likes left. What can I say?
             Direction::Left
-        }.to_str()
-    };
+        }.to_str();
     
     info!("{} MOVE {}", game.id, direction);
 
@@ -85,7 +84,7 @@ fn find_perfect_move(me: &Battlesnake, board: &Board) -> Option<Direction> {
     // TODO: Encourage corny to use an advanced stratergy rather than their d4.
     let moves = possible_moves
         .into_iter()
-        .filter(|&(_, v)| v == true)
+        .filter(|&(_, v)| v)
         .map(|(k, _)| k)
         .collect::<Vec<_>>();
 
